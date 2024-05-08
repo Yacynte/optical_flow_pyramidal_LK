@@ -59,10 +59,37 @@ def optimized_dIk(I_L,J_L,x,y,v_k,g_L,l,sh):
     #print("dI_k",dI_k)
     return dI_k
 
+def plot(image,q3,q4,foes, static):
+    S = np.shape(image)
+    s = np.intp(np.intp(S)/3)
+    feature = np.intp(q3)
+    dept = np.intp(q4)
+
+    # Draw arrow on image
+    for i in range(len(dept)):
+        cv2.arrowedLine(image, ((feature[i,0]),(feature[i,1])), ((dept[i,0]), (dept[i,1])), [255, 150, 0], 1, tipLength=0.2)
+    
+    # Draw focus of expansion
+    if static:
+        cv2.circle(image, (np.intp(foes[0]),np.intp(foes[1])), 7, (0, 0, 255), -1)
+    else:
+        # Draw the line on the image
+        image_with_line = cv2.line(image, (0,s[0]), (S[1], s[0]), (0, 0, 255), thickness=2)
+        image_with_line = cv2.line(image, (0,2*s[0]), (S[1], 2*s[0]), (0, 0, 255), thickness=2)
+        image_with_line = cv2.line(image, (s[1],0), (s[1], S[0]), (0, 0, 255), thickness=2)
+        image_with_line = cv2.line(image, (2*s[1],0), (2*s[1], S[0]), (0, 0, 255), thickness=2)
+        for j in range(len(foes)):
+            cv2.circle(image, (np.intp(foes[j,0]),np.intp(foes[j,1])), 7, (0, 0, 255), -1)
+    # Display the image with arrows
+    cv2.imshow('Optical flow Frame',image)
+    #print("image show")
+    # key = cv2.waitKey(10)
+    # return key
 
 
 
-def lucas_pyramidal(img1_,img2_, number_featues,wz,level,k, inlier_threshold, static):
+
+def lucas_pyramidal(img1_, img2_, number_features=100, wz=5, level=5, k=70, inlier_threshold=3, static=True):
     img1 = np.array(cv2.cvtColor((img1_), cv2.COLOR_BGR2GRAY))
     img2 = np.array(cv2.cvtColor((img2_), cv2.COLOR_BGR2GRAY))
     I1 = np.array(img1)
@@ -83,7 +110,7 @@ def lucas_pyramidal(img1_,img2_, number_featues,wz,level,k, inlier_threshold, st
         J_L[0:sh[i,0],0:sh[i,1],i] = cv2.resize(J_L[0:sh[i-1,0],0:sh[i-1,1],i-1], None, fx = 0.5, fy = 0.5)
     
     # get good features to track and convert them to an nx2 array
-    features = cv2.goodFeaturesToTrack(I1,number_featues,0.01,10)
+    features = cv2.goodFeaturesToTrack(I1,number_features,0.01,10)
     q1 =[]
     q2 = np.intp(np.array(features).reshape(len(features),-1))
 
@@ -142,4 +169,6 @@ def lucas_pyramidal(img1_,img2_, number_featues,wz,level,k, inlier_threshold, st
         q2, d, foes = inlier_dynamic(q2, d, S, inlier_threshold)
     q3 = q2 + d
 
-    return q2, q3 , foes
+    plot(img1_, q2, q3, foes, static)
+
+    # return q2, q3 , foes
