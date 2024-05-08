@@ -6,7 +6,7 @@
 
 import cv2
 import numpy as np
-from lib.rejection import inlier_dynamic, inlier_static
+from rejection import inlier_dynamic, inlier_static
 
 
 
@@ -36,10 +36,7 @@ def optimize_x_y(q,sh,l,wz):
     return np.intp(x),np.intp(y),np.intp(x_),np.intp(y_)
 
 def optimize_Ix_and_Iy(I_L,sh,l, x,y,x_,y_):
-    #I_x = np.zeros((S[0],w**2), dtype=np.float32)
-    #I_y = np.zeros((S[0],w**2), dtype=np.float32)
-    #j = 0
-    #print(np.shape(y),np.shape(np.minimum(x + 1, sh[l, 1] - 1)))
+
     I_x = (I_L[y, np.minimum(x + 1, sh[l, 1] - 1)] - I_L[y, x_ ]) / 2
     I_y = (I_L[np.minimum(y + 1, sh[l, 0] - 1), x] - I_L[y_, x,]) / 2
     
@@ -88,20 +85,12 @@ def lucas_pyramidal(img1_,img2_, number_featues,wz,level,k, inlier_threshold, st
     # get good features to track and convert them to an nx2 array
     features = cv2.goodFeaturesToTrack(I1,number_featues,0.01,10)
     q1 =[]
-    '''feature = np.int0(features)
-    for i in range(len(feature)):
-        q1.append(([feature[i,0,0], feature[i,0,1]]))'''
-
     q2 = np.intp(np.array(features).reshape(len(features),-1))
 
     # Initial guess
     g_Lm = np.zeros((len(q2),2),dtype=np.float32)
     v_k_out = []
 
-    '''g_Lm_0 = np.array(initial_guess)
-    for ij in range(len(g_Lm)):
-        g_Lm[ij,:] = g_Lm_0'''
-    #print(initial_guess)
     # calculate the optical flow for all points at a time for each level    
     for l in range(level-1,-1,-1):
         q = np.intp(q2/2**l)
@@ -141,24 +130,16 @@ def lucas_pyramidal(img1_,img2_, number_featues,wz,level,k, inlier_threshold, st
 
             # guess for the next iteration
             v_k += n_k
-            #print(n_k)
-        #print(n_k)
-        #print(j-1)
+
         g_Lm = 2*(v_k+g_Lm)
         v_k_out.append(np.median(v_k,axis=0))
-        #print(np.median(v_k, axis=0))
-        #print(b)
 
     d = g_Lm/2
-    #dm = np.median(d, axis=0)
-    #print(dm)
-    #q2, d, foes, n = brut_force(q2,d,S,3)
+
     if static:
         q2, d, foes = inlier_static(q2, d, S, inlier_threshold)
     else:
         q2, d, foes = inlier_dynamic(q2, d, S, inlier_threshold)
-    #foes = 0
-    #print(foes)
     q3 = q2 + d
-    #print(np.median(d, axis=0))
+
     return q2, q3 , foes
