@@ -55,7 +55,9 @@ flow = lucas_pyramidal(img1_, img2_, number_features=100, wz=5, level=5, k=70, i
 
 ### Output
 The function returns the calculated optical flow for the specified parameters.
+### Static Environment
 ![Static Environment](./results/optical_flow_pyramid_outlier_.jpg)
+### Dynamic Environment
 ![Dynamic Environment](./results/outlier_rejection_dynamic.jpg)
 
 ## License
