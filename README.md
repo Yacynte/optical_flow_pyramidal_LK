@@ -48,11 +48,9 @@ import cv2
 # Load images
 img1_ = 'frame1.png'
 img2_ = 'frame2.png'
-img1 = cv2.imread(img1_, cv2.IMREAD_GRAYSCALE)
-img2 = cv2.imread(img2_, cv2.IMREAD_GRAYSCALE)
 
 # Call the lucas_pyramidal function with relevant parameters
-flow = lucas_pyramidal(img1, img2, number_features=100, wz=5, level=5, k=70, inlier_threshold=3, static=True)
+flow = lucas_pyramidal(img1_, img2_, number_features=100, wz=5, level=5, k=70, inlier_threshold=3, static=True)
 ```
 
 ### Output
