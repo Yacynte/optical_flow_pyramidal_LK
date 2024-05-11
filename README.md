@@ -21,7 +21,6 @@ This repository contains an implementation of the Pyramidal Lucas-Kanade optical
    ```bash
    pip install -r requirements.txt
    ```
-   Make sure your `requirements.txt` contains all the necessary libraries.
 
 ## Usage
 To calculate the optical flow using the Pyramidal Lucas-Kanade method, you can call the function `lucas_pyramidal`:
